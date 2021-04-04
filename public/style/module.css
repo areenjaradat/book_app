@@ -1,0 +1,27 @@
+h4{
+    background: rgba(74, 80, 74, 0.3);
+    padding: 2%;
+  text-align: center;
+}
+input{
+    margin: 3%;
+      padding: 2%;
+  }
+  fieldset{
+      margin: 3%;
+      padding: 2%;
+      background-color: grey;
+  }
+  button{
+      background-color: black;
+      color: white;
+      padding: 2%;
+  }
+  div img{
+    width: 40%;
+    margin-left: 30%;
+}
+div h1,h3,p{
+    padding: 1%;
+    text-align: center;
+}

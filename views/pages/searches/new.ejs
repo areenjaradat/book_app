@@ -1,11 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <link rel="stylesheet" href="/style/reset.css">
+    <link rel="stylesheet" href="/style/base.css">
+    <link rel="stylesheet" href="/style/layout.css">
+    <link rel="stylesheet" href="/style/module.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
     <title>Book Collection</title>
   </head>
   <body>
+    <header>
+      <h1>best books!</h1>
+  </header>
     <main>
       <h4>Search by Title or Author</h4>
+     
       <form action="/searches" method="post">
         <input type="text" name="search" placeholder="Enter a title or author" required>
         <fieldset>
@@ -22,6 +33,7 @@
         </fieldset>
         <button type="submit">Search the Google Books API</button>
       </form>
+  
     </main>
   </body>
 </html>
