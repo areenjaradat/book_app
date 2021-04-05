@@ -1,7 +1,7 @@
 // Application Dependencies
 const express = require('express');
 const superagent = require('superagent');
-
+const pg=require('pg');
 // Application Setup
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,6 +21,8 @@ app.get('/searches/new', showForm);
 
 // Creates a new search to the Google Books API
 app.post('/searches', createSearch);
+app.get('/books/:id',createbyId);
+app.post('/books',handleSelect);
 
 app.use(express.static('./public'));
 
@@ -31,6 +33,7 @@ app.use('*', notFoundHandler); // 404 not found url
 
 app.use(errorHandler);
 
+const client = new pg.Client(process.env.DATABASE_URL);
 
 
 function showForm(request, response) {
@@ -39,8 +42,18 @@ function showForm(request, response) {
 }
 
 function renderHomePage(request, response) {
-  console.log('inside home page');
-  response.render('pages/index');
+  // console.log('inside home page');
+  // response.render('pages/index');
+
+  // let SQL='INSERT INTO book (title,author, isbn, image_url, description)VALUES($1,$2,$3,$4,$5)';
+  // let VALUES=['Dune', 'Frank Herbert', 'ISBN_13 9780441013593', 'http://books.google.com/books/content?id=B1hSG45JCX4C&printsec=frontcover&img=1&zoom=5&edge=curl&source=gbs_api', 'Follows the adventures of Paul Atreides, the son of a betrayed duke given up for dead on a treacherous de'];
+  let SQL =`SELECT * FROM book;`;
+  client.query(SQL).then(data=>{
+    console.log(data);
+    console.log(data.rows);
+    response.render('pages/index',{results:data.rows});
+  });
+
 }
 
 
@@ -64,10 +77,36 @@ function createSearch(request, response) {
     })
     .then(results => response.render('pages/show', { searchResults: results }))
     .catch((err)=> {
-      response.render('pages/error', { error: 'sorry we have a problem' });
+      response.render('pages/error', { error: err });
     });
   // how will we handle errors?
 }
+
+
+function createbyId(request,response){
+  let SQL='SELECT * FROM book WHERE id=$1;';
+  console.log(request.params);
+  let vals=[request.params.id];
+  client.query(SQL,vals).then(data=>{
+    response.render('pages/books/show',{results:data.rows});
+  }) .catch((err)=> {
+    response.render('pages/error', { error: err });
+  });
+}
+
+
+function handleSelect(request,response){
+  let book=request.body;
+  console.log(request.body);
+  let SQL='INSERT INTO book (title,author,isbn,image_url,description) VALUES ($1, $2, $3, $4, $5) RETURNING id;';
+  let val=[book.title,book.author,book.isbn,book.image_url,book.description];
+  client.query(SQL,val).then(results=>{
+    response.redirect(`/books/${results.rows[0].id}`);
+  }) .catch((err)=> {
+    response.render('pages/error', { error: err });
+  });
+}
+
 
 // HELPER FUNCTIONS
 // Only show part of this to get students started
@@ -76,10 +115,9 @@ function Book(info) {
 
   this.title = info.title || 'No title available';
   this.img = info.imageLinks || placeholderImage;
-  this.title = info.title;
-  this.authors = info.authors.join(',');
+  this.authors = info.authors || 'No authors';
   this.description = info.description || 'No Description';
-
+  this.isbn = info.industryIdentifiers[0].identifier || 'not available';
 }
 
 function notFoundHandler(request, response) {
@@ -90,4 +128,6 @@ function errorHandler(err, request, response) {
   response.status(500).send('something is wrong in server');
 }
 
-app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
+client.connect().then(()=>{
+  app.listen(PORT, () => {console.log(`Listening to Port ${PORT}`);});
+});
