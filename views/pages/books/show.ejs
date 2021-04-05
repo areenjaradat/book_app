@@ -10,23 +10,16 @@
     <title>Book Collection</title>
   </head>
   <body>
-    <header>
-      <h1>best books!</h1>
-  </header>
     <main>
-      <h4>My Book Collection</h4>
-
-      <!-- <section>
-        <% results.forEach( book => { %>
-          <div>
-            <img src="<%= book.image_url %>" alt="">
-            <h1><%= book.title%></h1>
-            <h3><%= book.authors%></h3>
-            <p><%= book.description %></p>
-          </div>
-        <% }) %>
-      </section> -->
-      <%- include('books/detail') %>
+      <header>
+        <h1>best books!</h1>
+    </header>
+      <main>
+        <form action="/" method="get">
+            <button id="index" type="submit">Go to the main page</button>
+          </form>
+        <h4>search Results</h4>
+        <%- include('detail') %>
     </main>
   </body>
 </html>
