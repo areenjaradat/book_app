@@ -77,8 +77,8 @@ function Book(info) {
   this.title = info.title || 'No title available';
   this.img = info.imageLinks || placeholderImage;
   this.title = info.title;
-  this.authors = info.authors;
-  this.description = info.description ? info.description : 'No Description';
+  this.authors = info.authors.join(',');
+  this.description = info.description || 'No Description';
 
 }
 
