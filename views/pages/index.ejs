@@ -7,16 +7,14 @@
     <link rel="stylesheet" href="style/module.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
-    <title>Book Collection</title>
+<%- include('../layout/head') %>
   </head>
   <body>
-    <header>
-      <h1>best books!</h1>
-  </header>
+    <%- include('../layout/header') %>
     <main>
       <h4>My Book Collection</h4>
 
-      <!-- <section>
+      <section>
         <% results.forEach( book => { %>
           <div>
             <img src="<%= book.image_url %>" alt="">
@@ -24,9 +22,11 @@
             <h3><%= book.authors%></h3>
             <p><%= book.description %></p>
           </div>
+          <form action="/books/<%= book.id%>" method="GET">
+            <button type="submit">View Details</button>
+        </form>
         <% }) %>
-      </section> -->
-      <%- include('books/detail') %>
+      </section>
     </main>
   </body>
 </html>
