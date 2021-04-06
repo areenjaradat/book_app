@@ -2,6 +2,7 @@
 const express = require('express');
 const superagent = require('superagent');
 const pg=require('pg');
+const methodOverride=require('method-override');
 // Application Setup
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,6 +14,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Set the view engine for server-side templating
 app.set('view engine', 'ejs');
+app.use(express.static('./public'));
+app.use(methodOverride('_method'));
 
 app.get('/', renderHomePage);
 
@@ -24,7 +27,12 @@ app.post('/searches', createSearch);
 app.get('/books/:id',createbyId);
 app.post('/books',handleSelect);
 
-app.use(express.static('./public'));
+
+
+app.get('/edit/:id',handleData);
+app.put('/edit/:id',handleUpdate);
+
+app.delete('/books/:id',handleDelete);
 
 app.get('*', (request, response) => response.status(404).send('This route does not exist'));
 
@@ -107,6 +115,36 @@ function handleSelect(request,response){
   });
 }
 
+function handleData(request,response){
+  let SQL='SELECT * FROM book WHERE id=$1;';
+  let id= request.params.id;
+  let vals=[id];
+  client.query(SQL,vals).then(data=>{
+    response.render('pages/books/edit',{results:data.rows[0]});
+  });
+}
+
+function handleUpdate(request,response){
+  let SQL ='UPDATE book SET author=$1 , title=$2, isbn=$3, image_url=$4, description=$5 WHERE id=$6';
+  let {author,title,isbn,image_url,description}=request.body;
+  let id= request.params.id;
+  let vals=[author,title,isbn,image_url,description,id];
+
+  client.query(SQL, vals).then(()=> {
+    console.log('success!!!');
+    response.redirect(`/books/${id}`);
+  });
+}
+
+function handleDelete(request,response){
+  const id=request.params.id;
+  console.log('deleting',id);
+  let SQL='DELETE FROM book WHERE id=$1;';
+  let vals=[id];
+  client.query(SQL,vals).then(()=>{
+    response.redirect('/');
+  });
+}
 
 // HELPER FUNCTIONS
 // Only show part of this to get students started
@@ -117,8 +155,10 @@ function Book(info) {
   this.img = info.imageLinks || placeholderImage;
   this.authors = info.authors || 'No authors';
   this.description = info.description || 'No Description';
-  this.isbn = info.industryIdentifiers[0].identifier || 'not available';
+  this.isbn = (info.industryIdentifiers)?info.industryIdentifiers[0].identifier : 'not available';
 }
+
+
 
 function notFoundHandler(request, response) {
   response.status(404).send('requested API is Not Found!');

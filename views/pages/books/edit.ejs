@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="../../style/reset.css">
+  <link rel="stylesheet" href="../../style/base.css">
+  <link rel="stylesheet" href="../../style/layout.css">
+  <link rel="stylesheet" href="../../style/module.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+</head>
+<body>
+  <main>
+    <h4>Update Book</h4>
+    <section>
+  <div>
+    <img src="<%= results.image_url %>" alt="">
+    <h1><%= results.title%></h1>
+    <h3><%= results.authors%></h3>
+    <p><%= results.description %></p>
+  </div>
+  <form action="/edit/<%= results.id %>?_method=PUT" method="POST">
+    <label for="">title</label>
+    <br>
+      <input type="text" name="title" placeholder=" Title"  value="<%=results.title%>">
+      <br>
+      <label for="">author</label>
+      <br>
+      <input type="text" name="author"  value="<%=results.authors%>">
+      <br>
+      <label for="">isbn</label>
+      <br>
+      <input type="text" name="isbn" placeholder="Populate ISBN"  value="<%=results.isbn%>">
+      <br>
+      <label for="">image_url</label>
+      <br>
+      <input type="text" name="image_url" placeholder="Populate Image URL" value="<%=results.image_url%>">
+      <br>
+      <label for="">description</label>
+      <br>
+      <input  id="description"  type="text" name="description"><%=results.description%></input> 
+      <br> 
+      <button type="submit">Update Book</button>
+  </form> 
+  </section>
+  </main>
+</body>
+</html>
+
+
+       
