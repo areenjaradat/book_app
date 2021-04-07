@@ -119,6 +119,7 @@ function handleSelect(request,response){
 
       let values = [data.rows[0].id, request.body.title, request.body.isbn, request.body.image_url, request.body.description];
       client.query(sql, values).then((result) => {
+        response.redirect('/');
         // console.log(result.rows);
       }).catch((err)=> {
         response.render('pages/error', { error: err });
@@ -127,8 +128,9 @@ function handleSelect(request,response){
       // console.log(newAutour);
       client.query(newAutour, [author]).then(data2 => {
         // console.log('newAutour',data2.rows);
-        let vals=[data2.rows[0].id,request.body.title, request.body.isbn, request.body.imge_url, request.body.description];
+        let vals=[data2.rows[0].id,request.body.title, request.body.isbn, request.body.image_url, request.body.description];
         client.query(sql,vals).then((result) => {
+          response.redirect('/');
         }).catch((err)=> {
           response.render('pages/error', { error: err });
         });
@@ -139,7 +141,7 @@ function handleSelect(request,response){
   }).catch((err)=> {
     response.render('pages/error', { error: err });
   });
-  response.redirect('/');
+  // response.redirect('/');
 }
 
 function handleData(request,response){
