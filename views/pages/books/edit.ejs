@@ -19,7 +19,7 @@
   <div>
     <img src="<%= results.image_url %>" alt="">
     <h1><%= results.title%></h1>
-    <h3><%= results.authors%></h3>
+    <h3><%= results.nane%></h3>
     <p><%= results.description %></p>
   </div>
   <form action="/edit/<%= results.id %>?_method=PUT" method="POST">
@@ -29,7 +29,7 @@
       <br>
       <label for="">author</label>
       <br>
-      <input type="text" name="author"  value="<%=results.authors%>">
+      <input type="text" name="author"  value="<%=results.name%>" disabled>
       <br>
       <label for="">isbn</label>
       <br>

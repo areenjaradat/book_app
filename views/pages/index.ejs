@@ -19,7 +19,7 @@
           <div>
             <img src="<%= book.image_url %>" alt="">
             <h1><%= book.title%></h1>
-            <h3><%= book.authors%></h3>
+            <h3><%= book.name%></h3>
             <p><%= book.description %></p>
           </div>
           <form action="/books/<%= book.id%>" method="GET">
