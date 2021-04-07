@@ -1,3 +1,6 @@
+'use strict';
+
+require('dotenv').config();
 // Application Dependencies
 const express = require('express');
 const superagent = require('superagent');
@@ -5,7 +8,7 @@ const pg=require('pg');
 const methodOverride=require('method-override');
 // Application Setup
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 
 
@@ -152,10 +155,11 @@ function Book(info) {
   const placeholderImage = 'https://i.imgur.com/J5LVHEL.jpg';
 
   this.title = info.title || 'No title available';
-  this.img = info.imageLinks || placeholderImage;
+  // this.img = info.imageLinks || placeholderImage;
   this.authors = info.authors || 'No authors';
   this.description = info.description || 'No Description';
   this.isbn = (info.industryIdentifiers)?info.industryIdentifiers[0].identifier : 'not available';
+  this.image_url = info.volumeInfo.imageLinks ? info.volumeInfo.imageLinks.thumbnail : placeholderImage;
 }
 
 
