@@ -26,20 +26,17 @@
           </div>
 <!-- i don't know how to take the data form the api so i make form and fill it by the value after submit it will save the value from it in sql -->
           <form action="/books" method="POST">
-            <label for="title">Title <input name="title" id="title" type="text" value= "<%= book.title %>"></label>
-            <br>
-            <label for="author">Author <input name='author' id='author' type="text"
-                    value="<%= book.authors %>"></label>
-            <br>
-            <label for="isbn">isbn <input name='isbn' id='isbn' type="text" value="<%= book.isbn %>"></label>
-            <br>
-            <label for="image_url">Image Path <input name='image_url' id='image_url' type="text"
-                    value="<%= book.image_url %>"></label>
-            <br>
-            <label for="description">Description <input name='description' id='description' type="text"
-                    value="<%= book.description %>"></label>
-            <br>
-            <button type="submit">Add book to shelf</button>
+           <input name="title" id="title" type="hidden" value= "<%= book.title %>">
+          
+           <input name='author' id='author' type="hidden" value="<%= book.authors %>">
+          
+           <input name='isbn' id='isbn' type="hidden" value="<%= book.isbn %>">
+           
+           <input name='image_url' id='image_url' type="hidden" value="<%= book.image_url %>">
+          
+           <input name='description' id='description' type="hidden" value="<%= book.description %>">
+           
+          <button type="submit">Add book to shelf</button>
         </form>
         
         <% }) %>

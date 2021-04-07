@@ -58,10 +58,10 @@ function renderHomePage(request, response) {
 
   // let SQL='INSERT INTO book (title,author, isbn, image_url, description)VALUES($1,$2,$3,$4,$5)';
   // let VALUES=['Dune', 'Frank Herbert', 'ISBN_13 9780441013593', 'http://books.google.com/books/content?id=B1hSG45JCX4C&printsec=frontcover&img=1&zoom=5&edge=curl&source=gbs_api', 'Follows the adventures of Paul Atreides, the son of a betrayed duke given up for dead on a treacherous de'];
-  let SQL =`SELECT * FROM book;`;
+  let SQL = 'SELECT book.id, author.name ,book.title,book.description ,book.image_url FROM book join author on book.author_id = author.id';
   client.query(SQL).then(data=>{
-    console.log(data);
-    console.log(data.rows);
+    // console.log(data);
+    // console.log(data.rows);
     response.render('pages/index',{results:data.rows});
   });
 
@@ -73,17 +73,17 @@ function renderHomePage(request, response) {
 function createSearch(request, response) {
   let url = 'https://www.googleapis.com/books/v1/volumes?q=';
 
-  console.log('request.body',request.body);
-  console.log('request.body.search',request.body.search);
+  // console.log('request.body',request.body);
+  // console.log('request.body.search',request.body.search);
 
   if (request.body.search[1] === 'title') { url += `+intitle:${request.body.search[0]}`; }
   if (request.body.search[1] === 'author') { url += `+inauthor:${request.body.search[0]}`; }
 
-  console.log({url});
+  // console.log({url});
 
   superagent.get(url)
     .then(apiResponse => {
-      console.log('apiResponse.body', apiResponse.body);
+      // console.log('apiResponse.body', apiResponse.body);
       return apiResponse.body.items.map(bookResult => new Book(bookResult.volumeInfo));
     })
     .then(results => response.render('pages/show', { searchResults: results }))
@@ -95,8 +95,8 @@ function createSearch(request, response) {
 
 
 function createbyId(request,response){
-  let SQL='SELECT * FROM book WHERE id=$1;';
-  console.log(request.params);
+  let SQL = `SELECT book.id, author.name ,book.title,book.description ,book.image_url FROM book join author on book.author_id = author.id WHERE book.id=$1`;
+  // console.log(request.params);
   let vals=[request.params.id];
   client.query(SQL,vals).then(data=>{
     response.render('pages/books/show',{results:data.rows});
@@ -107,19 +107,43 @@ function createbyId(request,response){
 
 
 function handleSelect(request,response){
-  let book=request.body;
-  console.log(request.body);
-  let SQL='INSERT INTO book (title,author,isbn,image_url,description) VALUES ($1, $2, $3, $4, $5) RETURNING id;';
-  let val=[book.title,book.author,book.isbn,book.image_url,book.description];
-  client.query(SQL,val).then(results=>{
-    response.redirect(`/books/${results.rows[0].id}`);
-  }) .catch((err)=> {
+  console.log('request.body',request.body);
+  let author = request.body.author;
+  let sql2 = `SELECT * from author WHERE name=$1`;
+  let sql = `INSERT INTO book (author_id,title,isbn,image_url,description) VALUES ($1,$2,$3,$4,$5) RETURNING * `;
+  let newAutour = `INSERT INTO author(name) VALUES ($1) RETURNING *`;
+
+  client.query(sql2, [author]).then(data => {
+    // console.log(data.rows);
+    if (data.rows.length > 0) {
+
+      let values = [data.rows[0].id, request.body.title, request.body.isbn, request.body.image_url, request.body.description];
+      client.query(sql, values).then((result) => {
+        // console.log(result.rows);
+      }).catch((err)=> {
+        response.render('pages/error', { error: err });
+      });
+    } else {
+      // console.log(newAutour);
+      client.query(newAutour, [author]).then(data2 => {
+        // console.log('newAutour',data2.rows);
+        let vals=[data2.rows[0].id,request.body.title, request.body.isbn, request.body.imge_url, request.body.description];
+        client.query(sql,vals).then((result) => {
+        }).catch((err)=> {
+          response.render('pages/error', { error: err });
+        });
+      }).catch((err)=> {
+        response.render('pages/error', { error: err });
+      });
+    }
+  }).catch((err)=> {
     response.render('pages/error', { error: err });
   });
+  response.redirect('/');
 }
 
 function handleData(request,response){
-  let SQL='SELECT * FROM book WHERE id=$1;';
+  let SQL = `SELECT book.id, author.name ,book.title,book.description ,book.image_url FROM book join author on book.author_id = author.id WHERE book.id=$1`;
   let id= request.params.id;
   let vals=[id];
   client.query(SQL,vals).then(data=>{
@@ -128,10 +152,10 @@ function handleData(request,response){
 }
 
 function handleUpdate(request,response){
-  let SQL ='UPDATE book SET author=$1 , title=$2, isbn=$3, image_url=$4, description=$5 WHERE id=$6';
-  let {author,title,isbn,image_url,description}=request.body;
+  let SQL ='UPDATE book SET title=$1, isbn=$2, image_url=$3, description=$4 WHERE id=$5';
+  let {title,isbn,image_url,description}=request.body;
   let id= request.params.id;
-  let vals=[author,title,isbn,image_url,description,id];
+  let vals=[title,isbn,image_url,description,id];
 
   client.query(SQL, vals).then(()=> {
     console.log('success!!!');
@@ -159,7 +183,8 @@ function Book(info) {
   this.authors = info.authors || 'No authors';
   this.description = info.description || 'No Description';
   this.isbn = (info.industryIdentifiers)?info.industryIdentifiers[0].identifier : 'not available';
-  this.image_url = info.imageLinks ? info.imageLinks.thumbnail : placeholderImage;
+  this.image_url = (info.imageLinks) ? info.imageLinks.thumbnail : placeholderImage;
+
 }
 
 
