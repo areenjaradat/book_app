@@ -159,7 +159,7 @@ function Book(info) {
   this.authors = info.authors || 'No authors';
   this.description = info.description || 'No Description';
   this.isbn = (info.industryIdentifiers)?info.industryIdentifiers[0].identifier : 'not available';
-  this.image_url = info.volumeInfo.imageLinks ? info.volumeInfo.imageLinks.thumbnail : placeholderImage;
+  this.image_url = info.imageLinks ? info.imageLinks.thumbnail : placeholderImage;
 }
 
 
